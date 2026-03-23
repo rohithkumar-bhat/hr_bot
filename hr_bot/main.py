@@ -9,6 +9,14 @@ from dotenv import load_dotenv
 # Load environment variables from .env
 load_dotenv()
 
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+def home():
+    return {"message": "API is running 🚀"}
+
 # Get Groq API Key
 GROQ_API_KEY = os.getenv("Groq_Api_Key")
 MODEL = "llama-3.3-70b-versatile"
