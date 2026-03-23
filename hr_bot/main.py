@@ -9,19 +9,11 @@ from dotenv import load_dotenv
 # Load environment variables from .env
 load_dotenv()
 
-from fastapi import FastAPI
-
-app = FastAPI()
-
-@app.get("/")
-def home():
-    return {"message": "API is running 🚀"}
-
 # Get Groq API Key
 GROQ_API_KEY = os.getenv("Groq_Api_Key")
 MODEL = "llama-3.3-70b-versatile"
 
-app = FastAPI(title="AI HR Assistant API")
+app = FastAPI(title="AI HR Assistant")
 
 class ChatRequest(BaseModel):
     message: str
@@ -29,7 +21,7 @@ class ChatRequest(BaseModel):
 @app.post("/api/chat")
 async def chat(request: ChatRequest):
     if not GROQ_API_KEY:
-        raise HTTPException(status_code=500, detail="Groq API key not configured in .env")
+        raise HTTPException(status_code=500, detail="Groq API key not configured")
     
     async with httpx.AsyncClient() as client:
         try:
@@ -75,4 +67,6 @@ app.mount("/static", StaticFiles(directory="."), name="static")
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    # Use PORT environment variable if available for Render
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
